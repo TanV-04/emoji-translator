@@ -4,6 +4,8 @@ import com.example.demo.entity.EmojiMapping;
 import com.example.demo.enums.GameCategory;
 import com.example.demo.repository.EmojiMappingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,10 +26,7 @@ public class EmojiMappingService {
     }
 
     public List<EmojiMapping> getRandomQuestions(GameCategory category, int limit) {
-        // Get all random questions and then limit in Java
         List<EmojiMapping> allRandom = emojiMappingRepository.findRandomByCategory(category.name());
-        
-        // Return only the requested number
         return allRandom.stream()
                 .limit(limit)
                 .collect(Collectors.toList());
@@ -35,5 +34,25 @@ public class EmojiMappingService {
 
     public EmojiMapping getById(Long id) {
         return emojiMappingRepository.findById(id).orElse(null);
+    }
+
+    public EmojiMapping save(EmojiMapping emojiMapping) {
+        return emojiMappingRepository.save(emojiMapping);
+    }
+
+    // Fetch top accessed emojis by limit
+    public List<EmojiMapping> getTopAccessedEmojis(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return emojiMappingRepository.findAllByActiveTrueOrderByAccessCountDesc(pageable).getContent();
+    }
+
+    // New method to increment hint usage count
+    public EmojiMapping incrementHintUsageCount(Long id) {
+        EmojiMapping emojiMapping = getById(id);
+        if (emojiMapping != null) {
+            emojiMapping.incrementHintUsageCount();
+            emojiMapping = save(emojiMapping);
+        }
+        return emojiMapping;
     }
 }

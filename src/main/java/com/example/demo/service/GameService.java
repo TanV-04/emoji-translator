@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-
 import com.example.demo.dto.GameAnswerRequest;
 import com.example.demo.dto.GameQuestionResponse;
 import com.example.demo.dto.GameResultResponse;
@@ -44,7 +43,7 @@ public class GameService {
     public GameQuestionResponse startNewGame(GameCategory category) {
         User currentUser = authService.getCurrentUser();
 
-        // Check if user has an incomplete game
+        // Close any incomplete game for the user
         gameSessionRepository.findByUserAndCompletedFalse(currentUser)
                 .ifPresent(session -> {
                     session.setCompleted(true);
@@ -59,6 +58,7 @@ public class GameService {
         gameSession.setCorrectAnswers(0);
         gameSession.setTotalScore(0);
         gameSession.setCompleted(false);
+        gameSession.setStartedAt(LocalDateTime.now());
 
         gameSession = gameSessionRepository.save(gameSession);
 
@@ -89,6 +89,10 @@ public class GameService {
         }
 
         EmojiMapping question = randomQuestions.get(0);
+
+        // Increment the access count here
+        question.incrementAccessCount();
+        emojiMappingService.save(question); // save the updated entity
 
         GameQuestionResponse response = new GameQuestionResponse();
         response.setSessionId(session.getId());
@@ -130,6 +134,10 @@ public class GameService {
                 pointsEarned = pointsEarned / 2;
             }
             session.setCorrectAnswers(session.getCorrectAnswers() + 1);
+
+            // --- Increment solveCount here ---
+            question.incrementSolveCount();
+            emojiMappingService.save(question);
         }
         attempt.setPointsEarned(pointsEarned);
 
@@ -189,11 +197,13 @@ public class GameService {
         userRepository.save(user);
     }
 
+    @Transactional
     public GameQuestionResponse getHintForQuestion(Long sessionId, Long questionId) {
         GameSession session = gameSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Game session not found"));
 
-        EmojiMapping question = emojiMappingService.getById(questionId);
+        // Increment hint usage count when hint is requested
+        EmojiMapping question = emojiMappingService.incrementHintUsageCount(questionId);
         if (question == null) {
             throw new ResourceNotFoundException("Question not found");
         }
