@@ -1,10 +1,57 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Compiled class files
+*.class
 
-### STS ###
+# Log files
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# Eclipse
 .apt_generated
 .classpath
 .factorypath
@@ -12,22 +59,78 @@ target/
 .settings
 .springBeans
 .sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
+# VS Code
 .vscode/
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Application properties with sensitive data
+application-local.properties
+application-dev.properties
+application-prod.properties
+
+# IMPORTANT: Keep application.properties for reference but remove sensitive data before committing
+# Consider using environment variables for sensitive information
+
+# JWT Secret and Database credentials
+# Make sure to use environment variables in production!
+
+# Logs
+logs/
+*.log
+log/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+# Test coverage reports
+coverage/
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Security - Never commit these!
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+*.keystore
+
+# Node (if using any frontend tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database files (if using H2 or SQLite locally)
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated files
+generated/
+.generated/
+
+# Spring Boot DevTools
+.spring-boot-devtools.properties

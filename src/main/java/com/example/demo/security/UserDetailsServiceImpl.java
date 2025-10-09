@@ -36,20 +36,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         );
     }
 
-    // ✅ Add this helper method
+    // ✅ Helper method to get the currently authenticated user
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // Ensure user is authenticated
         if (authentication == null || !authentication.isAuthenticated()
                 || authentication.getPrincipal().equals("anonymousUser")) {
             throw new RuntimeException("No authenticated user found");
         }
 
-        // Extract username from authentication object
         String username = authentication.getName();
 
-        // Fetch the corresponding User entity from DB
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
