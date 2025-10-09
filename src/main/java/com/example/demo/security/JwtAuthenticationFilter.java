@@ -25,21 +25,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserDetailsServiceImpl userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, 
-                                    HttpServletResponse response, 
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
+            logger.info("JWT Filter triggered for URI: " + request.getRequestURI());
+
             String jwt = getJwtFromRequest(request);
+            logger.info("Authorization header raw value: " + request.getHeader("Authorization"));
+            logger.info("Extracted token: " + jwt);
 
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+                logger.info("✅ Token is valid. Setting authentication context.");
+
                 String username = tokenProvider.getUsernameFromToken(jwt);
+                logger.info("Authenticated user: " + username);
+
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                
-                UsernamePasswordAuthenticationToken authentication = 
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                logger.warn("❌ Token missing or invalid.");
             }
         } catch (Exception ex) {
             logger.error("Could not set user authentication in security context", ex);
