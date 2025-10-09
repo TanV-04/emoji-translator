@@ -1,9 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.FavoriteEmoji;
-import com.example.demo.entity.User;
 import com.example.demo.repository.FavoriteEmojiRepository;
-import com.example.demo.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,33 +13,32 @@ public class FavoriteEmojiService {
     @Autowired
     private FavoriteEmojiRepository favoriteEmojiRepository;
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-
     public FavoriteEmoji saveFavorite(String name, String text, String emojiTranslation) {
-        User currentUser = userDetailsService.getCurrentUser();
-        FavoriteEmoji favorite = FavoriteEmoji.builder()
-                .name(name)
-                .text(text)
-                .emojiTranslation(emojiTranslation)
-                .user(currentUser)
-                .build();
+        FavoriteEmoji favorite = new FavoriteEmoji();
+        favorite.setName(name);
+        favorite.setText(text);
+        favorite.setEmojiTranslation(emojiTranslation);
         return favoriteEmojiRepository.save(favorite);
     }
 
     public List<FavoriteEmoji> getFavorites() {
-        User currentUser = userDetailsService.getCurrentUser();
-        return favoriteEmojiRepository.findByUser(currentUser);
+        return favoriteEmojiRepository.findAll();
     }
 
     public FavoriteEmoji updateFavoriteName(Long id, String newName) {
-        FavoriteEmoji fav = favoriteEmojiRepository.findById(id)
+        FavoriteEmoji favorite = favoriteEmojiRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Favorite not found"));
-        fav.setName(newName);
-        return favoriteEmojiRepository.save(fav);
+        favorite.setName(newName);
+        return favoriteEmojiRepository.save(favorite);
     }
 
     public void deleteFavorite(Long id) {
         favoriteEmojiRepository.deleteById(id);
+    }
+
+    // 🧠 New helper: get emoji combo by name
+    public String getEmojiByName(String name) {
+        FavoriteEmoji fav = favoriteEmojiRepository.findByName(name);
+        return fav != null ? fav.getEmojiTranslation() : null;
     }
 }

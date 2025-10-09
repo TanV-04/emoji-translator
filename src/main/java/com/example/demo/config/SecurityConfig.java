@@ -52,7 +52,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/api/auth/**", "/api/analytics/**", "/favicon.ico").permitAll()
+                        .requestMatchers(
+                                "/",                 // temporary test route
+                                "/api/auth/**",      // public auth endpoints
+                                "/api/analytics/**", // optional analytics
+                                "/favicon.ico"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
